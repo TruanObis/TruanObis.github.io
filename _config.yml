@@ -1,0 +1,30 @@
+url: "https://truanobis.github.io"
+baseurl: ""
+lang: ko
+timezone: Asia/Seoul
+encoding: UTF-8
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+permalink: /posts/:slug/
+future: false
+unpublished: false
+strict_front_matter: true
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      render_with_liquid: false
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - test
+  - vendor
+  - .bundle
+  - .github
+  - .pages.yml
+  - LICENSE-CONTENT.md
