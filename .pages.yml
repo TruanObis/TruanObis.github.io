@@ -1,0 +1,90 @@
+media:
+  input: assets/uploads
+  output: /assets/uploads
+  categories: [image]
+  rename: random
+
+content:
+  - name: posts
+    label: 글
+    type: collection
+    path: _posts
+    format: yaml-frontmatter
+    filename:
+      template: "{year}-{month}-{day}-{fields.uid}.md"
+      field: false
+    subfolders: false
+    operations:
+      create: true
+      rename: false
+      delete: true
+    view:
+      fields: [title, published, date]
+      primary: title
+      sort: [date, title]
+      search: [title, description, body]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: uid
+        type: uuid
+        hidden: true
+        options:
+          editable: false
+          generate: false
+      - name: title
+        label: 제목
+        type: string
+        required: true
+      - name: date
+        label: 작성일
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: published
+        label: 사이트에 게시
+        type: boolean
+        default: true
+        description: "끄면 사이트·피드·AI용 목록에서 제외됩니다. 공개 GitHub 저장소의 원문과 이력은 계속 공개되므로 비밀 초안을 저장하지 마세요."
+      - name: description
+        label: 짧은 설명
+        type: text
+        description: 목록과 검색 결과에 사용할 설명입니다. 비워 두어도 됩니다.
+      - name: tags
+        label: 태그
+        type: string
+        list: true
+      - name: body
+        label: 본문
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+
+  - name: site
+    label: 블로그 설정
+    type: file
+    path: _data/site.yml
+    format: yaml
+    operations:
+      delete: false
+      rename: false
+    fields:
+      - name: title
+        label: 블로그 이름
+        type: string
+        description: 비워 두면 이름을 표시하지 않습니다.
+      - name: author
+        label: 작성자 이름
+        type: string
+        description: 비워 두면 작성자 이름을 표시하지 않습니다.
+      - name: description
+        label: 블로그 소개
+        type: text
+        description: 글 목록 상단에 표시됩니다. 비워 두어도 됩니다.
+
+settings:
+  content:
+    merge: true

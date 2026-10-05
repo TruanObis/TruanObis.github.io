@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {%- assign blog = site.data.site -%}
+  {%- assign site_title = blog.title | strip -%}
+  {%- assign page_title = page.title | default: "글 목록" -%}
+  <title>{{ page_title | escape }}{% if site_title != "" %} · {{ site_title | escape }}{% endif %}</title>
+  {%- assign description = page.description | default: blog.description | strip -%}
+  {% if description != "" %}<meta name="description" content="{{ description | escape }}">{% endif %}
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}">
+  <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml">
+  <link rel="alternate" type="application/rss+xml" href="{{ '/feed.xml' | absolute_url }}" title="글 피드">
+  <link rel="describedby" type="text/plain" href="{{ '/llms.txt' | absolute_url }}">
+  {% if page.markdown_url %}<link rel="alternate" type="text/markdown" href="{{ page.markdown_url | absolute_url }}">{% endif %}
+  <meta property="og:title" content="{{ page_title | escape }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
+  <meta property="og:locale" content="ko_KR">
+  {% if site_title != "" %}<meta property="og:site_name" content="{{ site_title | escape }}">{% endif %}
+  {% if description != "" %}<meta property="og:description" content="{{ description | escape }}">{% endif %}
+  {% if page.schema_json %}<script type="application/ld+json">{{ page.schema_json }}</script>{% endif %}
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <div class="shell">
+    <header class="site-header">
+      {% if site_title != "" %}<a class="site-title" href="{{ '/' | relative_url }}">{{ site_title | escape }}</a>{% endif %}
+      <nav aria-label="메인 메뉴">
+        <a href="{{ '/' | relative_url }}"{% if page.url == '/' %} aria-current="page"{% endif %}>글 목록</a>
+        <a href="{{ '/policy/' | relative_url }}"{% if page.url == '/policy/' %} aria-current="page"{% endif %}>이용 안내</a>
+      </nav>
+      <a class="manage-link" href="https://app.pagescms.org">글 관리 <span aria-hidden="true">↗</span></a>
+    </header>
+    <main id="main" tabindex="-1">{{ content }}</main>
+    <footer class="site-footer">
+      <span>AI 검색 · 학습 허용</span>
+      <nav aria-label="자료 형식">
+        <a href="{{ '/feed.xml' | relative_url }}">피드</a>
+        <a href="{{ '/llms.txt' | relative_url }}">llms.txt</a>
+        <a href="{{ '/posts.json' | relative_url }}">JSON</a>
+        <a href="{{ '/sitemap.xml' | relative_url }}">사이트맵</a>
+      </nav>
+    </footer>
+  </div>
+</body>
+</html>

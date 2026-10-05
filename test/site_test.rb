@@ -7,6 +7,8 @@ require "json"
 require "rexml/document"
 require "open3"
 
+Dir[File.expand_path("../_plugins/*.rb", __dir__)].sort.each { |path| require path }
+
 class SiteTest < Minitest::Test
   ROOT = File.expand_path("..", __dir__)
   UID = "59ac2a53-cadc-4dca-8a31-3e1a1e6dcfcf"
@@ -17,10 +19,12 @@ class SiteTest < Minitest::Test
     @source = File.join(@tmp, "source")
     @dest = File.join(@tmp, "public")
     FileUtils.mkdir_p(@source)
-    Dir.children(ROOT).reject { |n| %w[.git .bundle vendor _site .jekyll-cache test].include?(n) }.each do |name|
+    Dir.children(ROOT).reject { |n| %w[.git .bundle vendor _site .jekyll-cache test _posts].include?(n) }.each do |name|
       FileUtils.cp_r(File.join(ROOT, name), @source)
     end
     FileUtils.mkdir_p(File.join(@source, "_posts"))
+    FileUtils.mkdir_p(File.join(@source, "_data"))
+    File.write(File.join(@source, "_data/site.yml"), { "title" => "", "author" => "", "description" => "" }.to_yaml)
     write_post
   end
 
@@ -30,12 +34,12 @@ class SiteTest < Minitest::Test
 
   def write_post(title: '한글 "제목" <글>', body: "실제 본문입니다.\n\n## 소제목\n\n![그림](/assets/uploads/example.svg)\n\n`{{ untouched }}`\n", published: true, uid: UID, path: POST, date: "2026-01-01")
     front = { "title" => title, "date" => date, "uid" => uid, "published" => published, "description" => '따옴표 "와" & 한글', "tags" => ["기록", "한글"] }
-    File.write(File.join(@source, path), front.to_yaml + "---\n" + body, encoding: "UTF-8")
+    File.binwrite(File.join(@source, path), (front.to_yaml + "---\n" + body).encode("UTF-8"))
   end
 
   def build
     FileUtils.rm_rf(@dest)
-    config = Jekyll.configuration("source" => @source, "destination" => @dest, "quiet" => true, "url" => "https://example.test", "baseurl" => "", "future" => false)
+    config = Jekyll.configuration("source" => @source, "destination" => @dest, "quiet" => true, "url" => "https://example.test", "baseurl" => "", "future" => false, "plugins_dir" => [])
     Jekyll::Site.new(config).process
   end
 
@@ -115,6 +119,21 @@ class SiteTest < Minitest::Test
     build
     assert_equal "2026-02-03T04:05:06+09:00", posts.first.fetch("modified")
     assert_includes read("sitemap.xml"), "2026-02-03T04:05:06+09:00"
+  end
+
+  def test_optional_identity_and_html_looking_titles_are_safely_encoded
+    identity = { "title" => "설정한 블로그", "author" => "이름 <&>", "description" => "소개" }
+    File.write(File.join(@source, "_data/site.yml"), identity.to_yaml)
+    write_post(title: '</script><script>alert("x")</script>')
+    build
+    html = read("posts/#{UID}/index.html")
+    snippets = html.scan(%r{<script type="application/ld\+json">(.*?)</script>}m).flatten
+    assert_equal 1, snippets.length
+    schema = JSON.parse(snippets.first)
+    assert_equal "이름 <&>", schema.fetch("author").fetch("name")
+    assert_equal '</script><script>alert("x")</script>', schema.fetch("headline")
+    refute_includes html, '<script>alert("x")</script>'
+    assert_includes html, "이름 &lt;&amp;&gt;"
   end
 
   def test_duplicate_ids_fail_build_instead_of_overwriting_a_post

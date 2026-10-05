@@ -1,0 +1,25 @@
+---
+layout: default
+title: 글 목록
+---
+<section class="archive" aria-labelledby="archive-title">
+  <header class="archive-header">
+    <div><p class="eyebrow">ARCHIVE</p><h1 id="archive-title">글 목록<span class="count">{{ site.posts.size }}</span></h1></div>
+    {% assign introduction = site.data.site.description | strip %}{% if introduction != "" %}<p class="description">{{ introduction | escape }}</p>{% endif %}
+  </header>
+  {% if site.posts.size > 0 %}
+  <ol class="post-list">
+    {% for post in site.posts %}
+    <li>
+      <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y.%m.%d" }}</time>
+      <div><h2><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h2>
+      {% if post.description and post.description != "" %}<p>{{ post.description | escape }}</p>{% endif %}
+      {% if post.tags.size > 0 %}<ul class="tags" aria-label="태그">{% for tag in post.tags %}<li>{{ tag | escape }}</li>{% endfor %}</ul>{% endif %}</div>
+      <span class="post-arrow" aria-hidden="true">↗</span>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <div class="empty-state"><span class="empty-rule" aria-hidden="true"></span><h2>아직 공개된 글이 없습니다.</h2><p>새 글이 게시되면 여기에 표시됩니다.</p></div>
+  {% endif %}
+</section>

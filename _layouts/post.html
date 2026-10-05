@@ -1,0 +1,19 @@
+---
+layout: default
+---
+<article class="post">
+  <a class="back-link" href="{{ '/' | relative_url }}">← 글 목록</a>
+  <header class="post-header">
+    <p class="eyebrow">{{ page.date | date: "%Y.%m.%d" }}</p>
+    <h1>{{ page.title | escape }}</h1>
+    {% assign author = site.data.site.author | strip %}{% if author != "" %}<p class="author">{{ author | escape }}</p>{% endif %}
+    {% if page.description and page.description != "" %}<p class="description">{{ page.description | escape }}</p>{% endif %}
+    <div class="post-details">
+      <span>수정 <time datetime="{{ page.last_modified_at | date_to_xmlschema }}">{{ page.last_modified_at | date: "%Y.%m.%d" }}</time></span>
+      <a href="{{ page.markdown_url | relative_url }}" type="text/markdown">Markdown 원문 ↗</a>
+    </div>
+    {% if page.tags.size > 0 %}<ul class="tags" aria-label="태그">{% for tag in page.tags %}<li>{{ tag | escape }}</li>{% endfor %}</ul>{% endif %}
+  </header>
+  <div class="prose">{{ content }}</div>
+  <footer class="post-footer"><a href="{{ '/policy/' | relative_url }}">이 글의 AI 이용 조건</a></footer>
+</article>
