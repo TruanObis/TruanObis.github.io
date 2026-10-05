@@ -2,7 +2,7 @@
 
 공개 블로그: https://truanobis.github.io/
 
-글 관리: https://app.pagescms.org/
+글 관리: https://app.pagescms.org/truanobis/truanobis.github.io/main/collection/posts
 
 블로그 이름과 작성자 이름은 비워 두었습니다. 첫 글은 직접 등록해 주세요.
 
